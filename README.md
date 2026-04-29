@@ -8,43 +8,25 @@ An AI-powered event runsheet generator. Enter your event details and get a compl
 runsheet-app/
 ├── index.html   — Main page
 ├── style.css    — Stylesheet
-├── app.js       — App logic + Groq API calls
+├── app.js       — App logic
+├── server.js    — Express proxy server for API requests
+├── .env         — Environment variables (store API key here)
 └── README.md    — This file
 ```
 
-## How to host (pick one)
+## How to run locally
 
-### Option 1 — Netlify (recommended, free)
-1. Go to https://app.netlify.com
-2. Drag and drop the `runsheet-app` folder onto the Netlify dashboard
-3. Your site is live instantly at a `.netlify.app` URL
-4. Add a custom domain in Site Settings → Domain management
-
-### Option 2 — Vercel (free)
-1. Install Vercel CLI: `npm i -g vercel`
-2. Inside the `runsheet-app` folder run: `vercel`
-3. Follow the prompts — live in ~30 seconds
-
-### Option 3 — GitHub Pages (free)
-1. Create a new GitHub repo
-2. Upload all three files to the repo root
-3. Go to Settings → Pages → Source: Deploy from branch (main)
-4. Your site is live at `https://yourusername.github.io/repo-name`
-
-### Option 4 — Any static host
-Upload `index.html`, `style.css`, and `app.js` to any static file host:
-- Cloudflare Pages
-- AWS S3 + CloudFront
-- Firebase Hosting
-- Render (static sites are free)
+1. Install dependencies: `npm install`
+2. Create a `.env` file in the root directory and add your Groq API key:
+   `GROQ_API_KEY=your_groq_api_key_here`
+3. Start the server: `npm start`
+4. Open your browser and navigate to `http://localhost:3000`
 
 ## API Key
 
-Users provide their own Groq API key at https://console.groq.com/keys  
-The key is stored in `sessionStorage` only — never sent anywhere except directly to Groq's API.
+The API key is securely stored in the `.env` file and handled by the Node.js backend. Users no longer need to enter it manually in the frontend.
 
 ## Customisation
 
-- To change the model, edit the `model` field in `app.js` (currently `llama-3.3-70b-versatile`)
+- To change the model, edit the `model` field in `server.js` (currently `llama-3.3-70b-versatile`)
 - To add your own branding, edit the `.nav-logo` text and colors in `style.css`
-- To pre-fill the API key for your team, set `document.getElementById('apiKey').value = 'YOUR_KEY'` at the top of `app.js` (only do this on a private/internal deployment)

@@ -1,0 +1,27 @@
+{
+  "name": "agenda-builder",
+  "version": "1.0.0",
+  "description": "An AI-powered event runsheet generator. Enter your event details and get a complete run of show with timings, buffer slots, AV notes, and MC scripts in seconds.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaiAryan1784/Agenda-Builder.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SaiAryan1784/Agenda-Builder/issues"
+  },
+  "homepage": "https://github.com/SaiAryan1784/Agenda-Builder#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
