@@ -28,35 +28,33 @@ let currentRunsheet = null;
 /* ===== GENERATE ===== */
 async function generateRunsheet() {
   const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { showToast('Please enter your Anthropic API key.'); document.getElementById('apiKey').focus(); return; }
+  if (!apiKey) { showToast('Please enter your Groq API key.'); document.getElementById('apiKey').focus(); return; }
   sessionStorage.setItem(KEY_STORAGE, apiKey);
 
-  const eventName     = document.getElementById('eventName').value.trim() || 'Untitled Event';
-  const eventType     = document.getElementById('eventType').value;
-  const audienceSize  = document.getElementById('audienceSize').value;
-  const startTime     = document.getElementById('startTime').value || '09:00';
-  const duration      = parseInt(document.getElementById('duration').value);
-  const numSessions   = parseInt(document.getElementById('numSessions').value);
-  const bufferStyle   = document.getElementById('bufferStyle').value;
-  const specialNotes  = document.getElementById('specialNotes').value.trim();
+  const eventName = document.getElementById('eventName').value.trim() || 'Untitled Event';
+  const eventType = document.getElementById('eventType').value;
+  const audienceSize = document.getElementById('audienceSize').value;
+  const startTime = document.getElementById('startTime').value || '09:00';
+  const duration = parseInt(document.getElementById('duration').value);
+  const numSessions = parseInt(document.getElementById('numSessions').value);
+  const bufferStyle = document.getElementById('bufferStyle').value;
+  const specialNotes = document.getElementById('specialNotes').value.trim();
 
   setLoading(true);
 
   const prompt = buildPrompt({ eventName, eventType, audienceSize, startTime, duration, numSessions, bufferStyle, specialNotes });
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }]
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' }
       })
     });
 
@@ -66,7 +64,8 @@ async function generateRunsheet() {
     }
 
     const data = await response.json();
-    const text = data.content.map(i => i.text || '').join('');
+    if (data.error) throw new Error(data.error.message);
+    const text = data.choices[0].message.content;
     const clean = text.replace(/```json|```/g, '').trim();
     const rs = JSON.parse(clean);
     currentRunsheet = { ...rs, startTime };
@@ -338,23 +337,22 @@ The user wants to refine it with this instruction: "${instruction}"
 Apply the refinement and return the COMPLETE updated runsheet in the same JSON format. Only return valid JSON, no markdown or explanation.`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }]
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' }
       })
     });
 
     const data = await response.json();
-    const text = data.content.map(i => i.text || '').join('');
+    if (data.error) throw new Error(data.error.message);
+    const text = data.choices[0].message.content;
     const clean = text.replace(/```json|```/g, '').trim();
     const rs = JSON.parse(clean);
     currentRunsheet = { ...rs, startTime: currentRunsheet.startTime };

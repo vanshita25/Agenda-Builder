@@ -8,7 +8,7 @@ An AI-powered event runsheet generator. Enter your event details and get a compl
 runsheet-app/
 ├── index.html   — Main page
 ├── style.css    — Stylesheet
-├── app.js       — App logic + Anthropic API calls
+├── app.js       — App logic + Groq API calls
 └── README.md    — This file
 ```
 
@@ -40,11 +40,11 @@ Upload `index.html`, `style.css`, and `app.js` to any static file host:
 
 ## API Key
 
-Users provide their own Anthropic API key at https://console.anthropic.com  
-The key is stored in `sessionStorage` only — never sent anywhere except directly to Anthropic's API.
+Users provide their own Groq API key at https://console.groq.com/keys  
+The key is stored in `sessionStorage` only — never sent anywhere except directly to Groq's API.
 
 ## Customisation
 
-- To change the model, edit the `model` field in `app.js` (currently `claude-opus-4-5`)
+- To change the model, edit the `model` field in `app.js` (currently `llama-3.3-70b-versatile`)
 - To add your own branding, edit the `.nav-logo` text and colors in `style.css`
 - To pre-fill the API key for your team, set `document.getElementById('apiKey').value = 'YOUR_KEY'` at the top of `app.js` (only do this on a private/internal deployment)
