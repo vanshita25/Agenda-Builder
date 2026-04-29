@@ -15,21 +15,14 @@ function showToast(msg, duration = 2400) {
   setTimeout(() => t.classList.remove('show'), duration);
 }
 
-/* ===== API KEY PERSISTENCE ===== */
-const KEY_STORAGE = 'rsb_api_key';
-window.addEventListener('DOMContentLoaded', () => {
-  const saved = sessionStorage.getItem(KEY_STORAGE);
-  if (saved) document.getElementById('apiKey').value = saved;
-});
+
 
 /* ===== STATE ===== */
 let currentRunsheet = null;
 
 /* ===== GENERATE ===== */
 async function generateRunsheet() {
-  const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { showToast('Please enter your Groq API key.'); document.getElementById('apiKey').focus(); return; }
-  sessionStorage.setItem(KEY_STORAGE, apiKey);
+
 
   const eventName = document.getElementById('eventName').value.trim() || 'Untitled Event';
   const eventType = document.getElementById('eventType').value;
@@ -45,17 +38,12 @@ async function generateRunsheet() {
   const prompt = buildPrompt({ eventName, eventType, audienceSize, startTime, duration, numSessions, bufferStyle, specialNotes });
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object' }
-      })
+      body: JSON.stringify({ prompt })
     });
 
     if (!response.ok) {
@@ -324,8 +312,7 @@ function refineRunsheet() {
 
 async function applyRefinement(instruction) {
   if (!currentRunsheet) return;
-  const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { showToast('Please enter your API key first.'); return; }
+
 
   setLoading(true);
 
@@ -337,17 +324,12 @@ The user wants to refine it with this instruction: "${instruction}"
 Apply the refinement and return the COMPLETE updated runsheet in the same JSON format. Only return valid JSON, no markdown or explanation.`;
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object' }
-      })
+      body: JSON.stringify({ prompt })
     });
 
     const data = await response.json();
